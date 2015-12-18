@@ -1,15 +1,11 @@
 module Main where
 
 import Graphics.Element exposing (show)
-import Native.Reporter
+import Reporter exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Time exposing (every, second)
-
-
-stealNotify : a -> a
-stealNotify = Native.Reporter.stealNotify
 
 add : Int -> Int -> Int
 add x y = x + y

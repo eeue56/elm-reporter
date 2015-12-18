@@ -6,14 +6,19 @@ var make = function make(elm) {
     if (elm.Native.Reporter.values) {
         return elm.Native.Reporter.values;
     }
-
+    // we want snapshots on the window so we can send out things if elm dies
     window._elmSnapshots = [];
+    var reporter = console.log;
 
     var stealNotify = function(a) {
         var originalNotify = elm.notify;
 
         elm.notify = function(id, value){
-            var changed = originalNotify(id, value);
+            try {
+                var changed = originalNotify(id, value);
+            } catch (e) {
+                report(window._elmSnapshots);
+            }
 
             window._elmSnapshots.push(takeSnapshot(flattenSignalGraph(elm)));
 
@@ -23,6 +28,25 @@ var make = function make(elm) {
         return a;
     }
 
+    var report = function(stuff){
+        console.warn("Reporter was called!");
+        reporter(stuff);
+        return stuff;
+    };
+
+
+    var setReporter = function(reporterSwitch){
+        switch (reporterSwitch.ctor){
+            case 'Logger':
+                reporter = console.log;
+                break;
+            case 'RemoteLogger':
+                reporter = console.log;
+                break;
+        }
+
+        return reporter;
+    };
 
     // returns array of node references, indexed by node id (?)
     function flattenSignalGraph(runtime) {
