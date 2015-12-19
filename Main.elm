@@ -23,7 +23,11 @@ update : Action -> Model -> Model
 update action model =
     case action of
         UpdateTime time -> { model | time = time }
-        Clicked -> { model | clicked = model.clicked + 1 }
+        Clicked ->
+            let
+                _ = reportNow ()
+            in
+                { model | clicked = model.clicked + 1 }
         Noop -> model
 
 clickbox = Signal.mailbox Noop

@@ -11,3 +11,6 @@ stealNotify =
 setReporter : Reporter -> (a -> a)
 setReporter =
     Native.Reporter.setReporter
+
+reportNow : () -> ()
+reportNow = Native.Reporter.reportNow

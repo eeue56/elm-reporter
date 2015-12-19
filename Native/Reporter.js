@@ -8,7 +8,17 @@ var make = function make(elm) {
     }
     // we want snapshots on the window so we can send out things if elm dies
     window._elmSnapshots = [];
-    var reporter = console.log;
+
+    var consoleLogger = function(stuff){
+        console.log(stuff);
+    };
+
+    var remoteLogger = function(stuff){
+        console.log(stuff);
+    };
+
+
+    var reporter = consoleLogger;
 
     var stealNotify = function(a) {
         var originalNotify = elm.notify;
@@ -30,18 +40,23 @@ var make = function make(elm) {
 
     var report = function(stuff){
         console.warn("Reporter was called!");
-        reporter(stuff);
+        reporter(stuff.slice());
         return stuff;
     };
 
 
+    var reportNow = function(_){
+        report(window._elmSnapshots);
+        return [];
+    };
+
     var setReporter = function(reporterSwitch){
         switch (reporterSwitch.ctor){
             case 'Logger':
-                reporter = console.log;
+                reporter = consoleLogger;
                 break;
             case 'RemoteLogger':
-                reporter = console.log;
+                reporter = remoteLogger;
                 break;
         }
 
@@ -80,7 +95,9 @@ var make = function make(elm) {
 
 
     return {
-        stealNotify: stealNotify
+        stealNotify: stealNotify,
+        setReporter: setReporter,
+        reportNow: reportNow
     };
 };
 
